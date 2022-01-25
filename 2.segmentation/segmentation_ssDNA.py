@@ -11,7 +11,10 @@ from scipy import ndimage
 
 plt.rcParams['image.interpolation'] = 'none'
 
-tif = skimage.io.imread('/media/yao/Elements SE/BGI_Paper/mouse_diaphragm/ssDNA_image/FP200000514BR_C1.tif')
+
+tif = skimage.io.imread('/home/yao/BGIpy37_pytorch113/stDrosophila-tutorials/2.segmentation/FP200000514BR_C1.tif')
+tif = cv2.resize(tif, None,fx=0.5, fy=0.5)
+
 
 fig, axes = plt.subplots(ncols=1, figsize=(3, 3), tight_layout=True)
 axes.imshow(tif)
@@ -46,3 +49,7 @@ axes[1].imshow(skimage.color.label2rgb(watershed, bg_label=0))
 axes[1].set_title('final segmentation')
 plt.show()
 plt.close(fig)
+
+import os
+with gzip.open(f"{slice}.npz.gz", "w") as f:
+    np.save(f, watershed)
