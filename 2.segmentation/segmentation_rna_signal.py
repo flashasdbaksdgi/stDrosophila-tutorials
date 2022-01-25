@@ -8,7 +8,7 @@ import sklearn
 import spateo as st
 from scipy import ndimage
 
-slice = "E14-16h_a_S13"
+slice = "E14-16h_a_S14"
 
 plt.rcParams['image.interpolation'] = 'none'
 save = f"/media/yao/Elements SE/BGI_Paper/E14_16/segmentation/{slice}_geneall"
