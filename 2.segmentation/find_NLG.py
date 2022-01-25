@@ -12,7 +12,7 @@ files.sort()
 for file in files[14:]:
     filename = file.split("\\")[-1] if platform.system() == "Windows" else file.split("/")[-1]
     print(filename)
-    nucleus_lasso = sd.tl.find_nuclear_genes(file=file, save=os.path.join(opath, filename), gene_num="all")
+    nucleus_lasso = sd.tl.find_nuclear_genes(path=file, save=os.path.join(opath, filename), gene_num="all")
     print(nucleus_lasso)
 
 
