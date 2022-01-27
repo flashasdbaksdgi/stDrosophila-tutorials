@@ -32,4 +32,5 @@ type(dist)
 pl = pv.Plotter()
 _ = pl.add_mesh(surface, scalars='implicit_distance', cmap='bwr')
 _ = pl.add_mesh(plane, color='w', style='wireframe')
-pl.show()"""
+pl.show()
+"""
