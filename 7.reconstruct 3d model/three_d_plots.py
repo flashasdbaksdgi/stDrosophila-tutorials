@@ -110,25 +110,25 @@ def three_d_color(
     return rgba
 
 
-
 def build_three_d_model(
-    adata: AnnData,
-    coordsby: str = "spatial",
-    groupby: Optional[str] = None,
-    group_show: Union[str, list] = "all",
-    group_cmap: Union[str, list, dict] = "rainbow",
-    group_amap: Union[float, list, dict] = 1.0,
-    gene_show: Union[str, list] = "all",
-    gene_cmap: str = "hot_r",
-    gene_amap: float = 1.0,
-    mask_color: str = "gainsboro",
-    mask_alpha: float = 0,
-    surf_alpha: float = 0.5,
-    smoothing: bool = True,
-    n_surf: int = 10000,
-    voxelize: bool = True,
-    voxel_size: Optional[list] = None,
-    voxel_smooth: Optional[int] = 200
+        adata: AnnData,
+        coordsby: str = "spatial",
+        groupby: Optional[str] = None,
+        group_show: Union[str, list] = "all",
+        group_cmap: Union[str, list, dict] = "rainbow",
+        group_amap: Union[float, list, dict] = 1.0,
+        gene_show: Union[str, list] = "all",
+        gene_cmap: str = "hot_r",
+        gene_amap: float = 1.0,
+        mask_color: str = "gainsboro",
+        mask_alpha: float = 0.0,
+        surf_color: str = "gainsboro",
+        surf_alpha: float = 0.5,
+        smoothing: bool = True,
+        n_surf: int = 10000,
+        voxelize: bool = True,
+        voxel_size: Optional[list] = None,
+        voxel_smooth: Optional[int] = 200
 ) -> UnstructuredGrid:
     """
     Reconstruct a voxelized 3D model.
@@ -138,13 +138,14 @@ def build_three_d_model(
         groupby: The key of the observations grouping to consider.
         group_show: Subset of groups used for display, e.g. [`'g1'`, `'g2'`, `'g3'`]. The default group_show is `'all'`, for all groups.
         group_cmap: Colors to use for plotting groups. The default group_cmap is `'rainbow'`.
-        group_amap: The opacity of the colors to use for plotting groups. The default group_amap is `1.0`.
+        group_amap: The alpha value of the RGBA tuple to use for plotting groups. The default group_amap is `1.0`.
         gene_show: Subset of genes used for display, e.g. [`'g1'`, `'g2'`, `'g3'`]. The default gene_show is `'all'`, for all groups.
         gene_cmap: Colors to use for plotting genes. The default gene_cmap is `'hot_r'`.
-        gene_amap: The opacity of the colors to use for plotting genes. The default gene_amap is `1.0`.
+        gene_amap: The alpha value of the RGBA tuple to use for plotting genes. The default gene_amap is `1.0`.
         mask_color: Color to use for plotting mask. The default mask_color is `'gainsboro'`.
-        mask_alpha: The opacity of the color to use for plotting mask. The default mask_alpha is `0.0`.
-        surf_alpha: The opacity of the color to use for surface. The default mask_alpha is `0.5`.
+        mask_alpha: The alpha value of the RGBA tuple to use for plotting mask. The default mask_alpha is `0.0`.
+        surf_color: Color to use for plotting surface. The default surf_color is `'gainsboro'`.
+        surf_alpha: The alpha value of the RGBA tuple to use for surface. The default surf_alpha is `0.5`.
         smoothing: Smoothing the surface of the reconstructed 3D structure.
         n_surf: The number of faces obtained using voronoi clustering. The larger the n_surf, the smoother the surface. Only valid when smoothing is True.
         voxelize: Voxelize the reconstructed 3D structure.
@@ -166,7 +167,7 @@ def build_three_d_model(
     # filter group info
     if groupby is None:
         n_points = _adata.obs.shape[1]
-        groups = pd.Series(["same"]*n_points, index=_adata.obs.index, dtype=str)
+        groups = pd.Series(["same"] * n_points, index=_adata.obs.index, dtype=str)
     else:
         if isinstance(group_show, str) and group_show is "all":
             groups = _adata.obs[groupby]
@@ -225,12 +226,12 @@ def build_three_d_model(
 
     surface.cell_data["groups"] = np.array(["mask"] * surface.n_cells).astype(str)
     surface.cell_data["groups_rgba"] = np.array(
-        [mpl.colors.to_rgba(mask_color, alpha=surf_alpha)] * surface.n_cells
+        [mpl.colors.to_rgba(surf_color, alpha=surf_alpha)] * surface.n_cells
     ).astype(float_type)
 
     surface.cell_data["genes"] = np.array([0] * surface.n_cells).astype(float_type)
     surface.cell_data["genes_rgba"] = np.array(
-        [mpl.colors.to_rgba(mask_color, alpha=surf_alpha)] * surface.n_cells
+        [mpl.colors.to_rgba(surf_color, alpha=surf_alpha)] * surface.n_cells
     ).astype(float_type)
 
     # Merge points and surface into a single mesh.
@@ -286,36 +287,38 @@ def three_d_slicing(
 
 
 def easy_three_d_plot(
-    mesh: Optional[pv.DataSet] = None,
-    surface: Optional[pv.DataSet] = None,
-    scalar: str = "groups",
-    surface_color: str = "gainsboro",
-    surface_opacity: float = 0.5,
-    outline: bool = False,
-    background: str = "white",
-    background_r: str = "black",
-    save: Optional[str] = None,
-    notebook: bool = False,
-    shape: Optional[list] = None,
-    off_screen: bool = False,
-    window_size: Optional[list] = None,
-    cpos: Union[str, tuple, list] = "iso",
-    legend_loc: str = "lower right",
-    legend_size: Optional[Sequence] = None,
-    view_up: Optional[list] = None,
-    framerate: int = 15,
+        mesh: Optional[pv.DataSet] = None,
+        scalar: str = "groups",
+        outline: bool = False,
+        ambient: float = 0.3,
+        opacity: float = 0.5,
+        background: str = "black",
+        background_r: str = "white",
+        save: Optional[str] = None,
+        notebook: bool = False,
+        shape: Optional[list] = None,
+        off_screen: bool = False,
+        window_size: Optional[list] = None,
+        cpos: Union[str, tuple, list] = "iso",
+        legend_loc: str = "lower right",
+        legend_size: Optional[Sequence] = None,
+        view_up: Optional[list] = None,
+        framerate: int = 15,
 ):
     """
     Create a plotting object to display pyvista/vtk mesh.
     Args:
         mesh: Reconstructed 3D structure.
-        surface: Surface of the reconstructed 3D structure
         scalar: Types used to “color” the mesh. Available scalars are:
                 * `'groups'`
                 * `'genes'`
-        surface_color: Color to use for plotting surface. The default surface_color is `'gainsboro'`.
-        surface_opacity: The opacity of the color to use for plotting surface. The default surface_opacity is `0.5`.
         outline: Produce an outline of the full extent for the input dataset.
+        ambient: When lighting is enabled, this is the amount of light in the range of 0 to 1 (default 0.0) that reaches
+                 the actor when not directed at the light source emitted from the viewer.
+        opacity: Opacity of the mesh. If a single float value is given, it will be the global opacity of the mesh and
+                 uniformly applied everywhere - should be between 0 and 1.
+                 A string can also be specified to map the scalars range to a predefined opacity transfer function
+                 (options include: 'linear', 'linear_r', 'geom', 'geom_r').
         background: The background color of the window.
         background_r: A color that is clearly different from the background color.
         save: If a str, save the figure. Infer the file type if ending on
@@ -372,48 +375,44 @@ def easy_three_d_plot(
         window_size=window_size,
         notebook=notebook,
         border=True,
-        border_color=background_r,
+        border_color=background_r
     )
     for subplot_index, cpo in zip(subplot_indices, cpos):
-        if surface is not None:
-            # Add the surface of reconstructed 3D structure.
-            p.add_mesh(surface, color=surface_color, opacity=surface_opacity)
 
-        if mesh is not None:
-            # Add a reconstructed 3D structure.
-            p.add_mesh(
-                mesh,
-                scalars=f"{scalar}_rgba",
-                rgba=True,
-                render_points_as_spheres=True,
-                ambient=0.5,
-            )
+        # Add a reconstructed 3D structure.
+        p.add_mesh(
+            mesh,
+            scalars=f"{scalar}_rgba",
+            rgba=True,
+            render_points_as_spheres=True,
+            ambient=ambient,
+            opacity=opacity
+        )
 
-            # Add a legend to render window.
-            mesh[f"{scalar}_hex"] = np.array([mpl.colors.to_hex(i) for i in mesh[f"{scalar}_rgba"]])
-            _data = pd.concat([pd.Series(mesh[scalar]), pd.Series(mesh[f"{scalar}_hex"])], axis=1)
-            _data.columns = ["label", "hex"]
-            _data = _data[_data["label"] != "mask"]
-            _data.drop_duplicates(inplace=True)
-            _data.sort_values(by=["label", "hex"], inplace=True)
-            _data = _data.astype(str)
-            gap = math.ceil(len(_data.index) / 5) if scalar is "genes" else 1
-            legend_entries = [[_data["label"].iloc[i], _data["hex"].iloc[i]] for i in range(0, len(_data.index), gap)]
-            if scalar is "genes":
-                legend_entries.append([_data["label"].iloc[-1], _data["hex"].iloc[-1]])
+        # Add a legend to render window.
+        mesh[f"{scalar}_hex"] = np.array([mpl.colors.to_hex(i) for i in mesh[f"{scalar}_rgba"]])
+        _data = pd.concat([pd.Series(mesh[scalar]), pd.Series(mesh[f"{scalar}_hex"])], axis=1)
+        _data.columns = ["label", "hex"]
+        _data = _data[_data["label"] != "mask"]
+        _data.drop_duplicates(inplace=True)
+        _data.sort_values(by=["label", "hex"], inplace=True)
+        _data = _data.astype(str)
+        gap = math.ceil(len(_data.index) / 5) if scalar is "genes" else 1
+        legend_entries = [[_data["label"].iloc[i], _data["hex"].iloc[i]] for i in range(0, len(_data.index), gap)]
+        if scalar is "genes":
+            legend_entries.append([_data["label"].iloc[-1], _data["hex"].iloc[-1]])
 
-            legend_size = (0.1, 0.1) if legend_size is None else legend_size
-            p.add_legend(
-                legend_entries,
-                face="circle",
-                bcolor=None,
-                loc=legend_loc,
-                size=legend_size,
-            )
+        legend_size = (0.1, 0.1) if legend_size is None else legend_size
+        p.add_legend(
+            legend_entries,
+            face="circle",
+            bcolor=None,
+            loc=legend_loc,
+            size=legend_size,
+        )
 
         if outline:
-            outline_mesh = surface.outline() if surface is not None else mesh.outline()
-            p.add_mesh(outline_mesh, color=background_r, line_width=3)
+            p.add_mesh(mesh.outline(), color=background_r, line_width=3)
 
         p.camera_position = cpo
         p.background_color = background

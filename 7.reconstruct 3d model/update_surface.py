@@ -11,12 +11,8 @@ adata = ad.read("/media/yao/Elements SE/BGI_Paper/Data/B_Anno_H5ad/sct_analysis_
 adata.obsm["spatial"] = adata.obs[["x", "y", "z"]].values
 coordsby = "spatial"
 
-voxel_model = build_three_d_model(adata=adata, coordsby=coordsby,  n_surf=10000, groupby="anno", gene_show="Adh",voxelize=False, mask_alpha=0.05, group_show="fat body")
-p = pv.Plotter()
-p.add_mesh(voxel_model, rgba=True, scalars="genes_rgba")
-p.show()
-
-
+voxel_model = build_three_d_model(adata=adata, coordsby=coordsby, groupby="anno", gene_show="Adh", voxelize=True, mask_alpha=0, group_show="fat body", voxel_size=[0.5, 0.5, 0.5])
+easy_three_d_plot(mesh=voxel_model, scalar="genes",ambient=0.3, opacity=0.4)
 """
 sphere_elv = surface.elevation(low_point=None, high_point=None)
 sphere_elv.plot(smooth_shading=True)
