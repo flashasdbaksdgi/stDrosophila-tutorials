@@ -12,13 +12,10 @@ adata.obsm["spatial"] = adata.obs[["x", "y", "z"]].values
 coordsby = "spatial"
 
 voxel_model = build_three_d_model(adata=adata, coordsby=coordsby, groupby="anno", gene_show="Adh", voxelize=True, mask_alpha=0, group_show="fat body", voxel_size=[0.5, 0.5, 0.5])
-easy_three_d_plot(mesh=voxel_model, scalar="genes",ambient=0.3, opacity=0.4)
-"""
-sphere_elv = surface.elevation(low_point=None, high_point=None)
+sphere_elv = voxel_model.elevation()
 sphere_elv.plot(smooth_shading=True)
 print(sphere_elv["Elevation"])
 
-"""
 """
 plane = pv.Plane()
 _ = surface.compute_implicit_distance(plane, inplace=True)
@@ -30,3 +27,5 @@ _ = pl.add_mesh(surface, scalars='implicit_distance', cmap='bwr')
 _ = pl.add_mesh(plane, color='w', style='wireframe')
 pl.show()
 """
+
+
