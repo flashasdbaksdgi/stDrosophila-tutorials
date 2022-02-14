@@ -62,7 +62,7 @@ def coords_filter_ee(
     return adata[adata.obs["outlier"] != -1, :]
 
 # Example data
-file = '/media/yao/Elements SE/BGI_Paper/Data/B_Anno_H5ad/sct_analysis_anno_h5ad/E16-18_a_SCT_anno.h5ad'
+file = 'E:\BGI_Paper\Data\B_Anno_H5ad\sct_analysis_anno_h5ad\E16-18_a_SCT_anno.h5ad'
 adata = ad.read(file)
 adata.obs["x"] = adata.obs["x"] - adata.obs["x"].min()
 adata.obs["y"] = adata.obs["y"] - adata.obs["y"].min()
@@ -95,5 +95,6 @@ clustered.cluster(10000)
 uniform_surf = clustered.create_mesh()
 density = uniform_surf.length / 200
 surface = pv.voxelize(uniform_surf, density=density, check_surface=False)
-print(type(surface))
+
 surface.plot(show_grid=True)
+
